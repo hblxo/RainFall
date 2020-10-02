@@ -122,9 +122,6 @@
       53a4a712787f40ec66c3c26c1f4b164dcad5552b038bb0addd69bf5bf6fa8e77
       ```
 
-      buffer[50];
-
-
 <br>
 ----
 ## Ressources

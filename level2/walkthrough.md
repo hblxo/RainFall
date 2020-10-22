@@ -55,6 +55,8 @@ Même réflexes que pour les levels précédents :
 
   - On recherche le pattern :
     `pattern search`
+    > EIP+0 found at offset: 80
+    > 
     > EBP+0 found at offset: 76
 
   - On peut vérifier que le buffer ne peut accepter que 76 caractères : 

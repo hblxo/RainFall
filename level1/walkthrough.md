@@ -92,7 +92,7 @@
     python3 get_offset.py 0x74747474
     offset = 76
 	```
-  > Note: Nous avons créé notre propre programme pour trouver la valeur de l'offset, mais il existe des outils permettant de le faire. Dans les prochains write up nous montrerons comment utiliser l'outil `pattern` de `peda`.
+  > Note: Nous avons créé notre propre programme pour trouver la valeur de l'offset, mais il existe des outils permettant de le faire. Pour les prochains levels nous utiliserons l'outil `pattern` de `peda`.
 
 
 - Dans la Vm :

@@ -30,7 +30,7 @@
   - `r`
   - `info registers`
   - `x/20 0x804a008`
-  - la chaine se remplit à partir de l'adresse `0x0804a010` en mémoire
+  - la chaine se remplit à partir de l'adresse`0x804a00c` (**`0x804a00c + 4 = 0x0804a010`**) 
 
 - Avec un shellcode (cf level2), + padding (108 - (45 + 4))+ adresse du début de la copie
 

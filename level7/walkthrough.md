@@ -31,7 +31,7 @@
     ```
 
 - Le programme utilise strcpy pour copier les arguments qu'on peut overflow
-- Une function `m` non appelée par le *main* print le contenu du fichier *.pass* ouvert dans le *main*. 
+- Une fonction `m` non appelée par le *main* print le contenu du fichier *.pass* ouvert dans le *main*. 
 - Avec gdb + peda, on peut déterminer que la taille du buffer est 20
 
   `pattern create`

